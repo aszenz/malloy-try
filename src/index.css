@@ -1,0 +1,49 @@
+:root {
+  /* font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale; */
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+}
+
+:root {
+  /* --malloy-composer-fontSize: 13px;
+  --malloy-composer-fontFamily: Arial, sans-serif;
+  --malloy-composer-background: #1e1e1e;
+  --malloy-composer-foreground: #eeeeee;
+
+  --malloy-composer-header-background: #333333;
+
+  --malloy-composer-code-fontSize: 13px;
+  --malloy-composer-code-fontFamily: Courier, monospace;
+
+  --malloy-composer-form-background: #000000;
+  --malloy-composer-form-foreground: #eeeeee;
+  --malloy-composer-form-border: #ececed;
+  --malloy-composer-form-fontFamily: Arial, sans-serif;
+  --malloy-composer-form-fontSize: 13px;
+  --malloy-composer-form-focus: #b0b0ff;
+  --malloy-composer-form-focusBackground: #5050ff;
+  --malloy-composer-form-fontSize: 13px;
+
+  --malloy-composer-menu-background: #000000;
+  --malloy-composer-menu-foreground: #eeeeee;
+  --malloy-composer-menu-border: #bbbbbb;
+  --malloy-composer-menu-title: #bbbbbb;
+  --malloy-composer-menu-fontFamily: Courier, monospace;
+  --malloy-composer-menu-fontSize: 13px; */
+}
