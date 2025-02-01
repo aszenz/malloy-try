@@ -44,7 +44,7 @@ function ModelExplorer({
       }
       console.info("updateQueryInUrl", history.current, historyIndex.current);
     },
-    []
+    [],
   );
   const {
     error: builderError,
@@ -58,7 +58,7 @@ function ModelExplorer({
     runQuery,
     isRunning,
   } = useRunQuery(modelDef, modelPath, (query, model, modelPath, queryName) =>
-    executeMalloyQuery(runtime, query, model, modelPath, queryName)
+    executeMalloyQuery(runtime, query, model, modelPath, queryName),
   );
 
   const source = getSourceDef(modelDef, sourceName);
@@ -76,7 +76,7 @@ function ModelExplorer({
     runtime,
     modelDef,
     source,
-    modelPath
+    modelPath,
   );
 
   const refresh = useCallback(
@@ -86,7 +86,7 @@ function ModelExplorer({
         refreshTopValues();
       }
     },
-    [refreshModel, refreshTopValues]
+    [refreshModel, refreshTopValues],
   );
 
   const undoContext = useMemo(() => {
@@ -157,7 +157,7 @@ async function executeMalloyQuery(
   query: string,
   model: malloy.ModelDef,
   modelPath: string,
-  queryName?: string
+  queryName?: string,
 ): Promise<malloy.Result> {
   const baseModel = await runtime._loadModelFromModelDef(model).getModel();
   const queryModel = await malloy.Malloy.compile({
@@ -176,7 +176,7 @@ async function executeMalloyQuery(
 
 function getSourceDef(
   modelDef: malloy.ModelDef,
-  name: string
+  name: string,
 ): malloy.SourceDef {
   const result = modelDef.contents[name];
   if (malloy.isSourceDef(result)) {
