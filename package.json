@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "lint": "eslint .",
+    "lint": "prettier --check . && tsc --noEmit && eslint .",
     "format": "prettier --write .",
     "preview": "vite preview"
   },
