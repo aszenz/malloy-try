@@ -1,14 +1,18 @@
 {
   "compilerOptions": {
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
-    "target": "ES2020",
+    "target": "ESNext",
     "useDefineForClassFields": true,
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "skipLibCheck": true,
     "paths": {
-      "@malloydata/query-composer": ["./node_modules/@malloydata/query-composer/dist/types/"],
-      "@malloydata/db-duckdb/wasm": ["./node_modules/@malloydata/db-duckdb/dist/duckdb_wasm_connection_browser.d.ts"]
+      "@malloydata/query-composer": [
+        "./node_modules/@malloydata/query-composer/dist/types/"
+      ],
+      "@malloydata/db-duckdb/wasm": [
+        "./node_modules/@malloydata/db-duckdb/dist/duckdb_wasm_connection_browser.d.ts"
+      ]
     },
 
     /* Bundler mode */

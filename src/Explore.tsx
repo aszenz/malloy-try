@@ -95,7 +95,9 @@ function ModelExplorer({
       if (query) {
         stubCompile
           .compileQuery(modelDef, query)
-          .then((query) => queryModifiers.setQuery(query, true))
+          .then((query) => {
+            queryModifiers.setQuery(query, true);
+          })
           .catch(console.error);
       } else {
         queryModifiers.clearQuery(true);
@@ -177,7 +179,7 @@ function getSourceDef(
   name: string
 ): malloy.SourceDef {
   const result = modelDef.contents[name];
-  if (result && malloy.isSourceDef(result)) {
+  if (malloy.isSourceDef(result)) {
     return result;
   }
   throw new Error(`Not a source: ${name}`);

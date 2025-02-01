@@ -3,26 +3,27 @@ import * as malloy from "@malloydata/malloy";
 import { DuckDBWASMConnection } from "@malloydata/db-duckdb/wasm";
 
 export { useRuntimeSetup, useTopValues };
-
 function useRuntimeSetup(modelDef: string) {
   const [setup, setRuntime] = useState<{
     runtime: malloy.Runtime;
     modelDef: malloy.ModelDef;
     refreshModel: () => void;
   } | null>(null);
+  const [refreshModel, setRefreshModel] = useState(false);
 
   useEffect(() => {
     async function setup() {
-      console.log("Setting up runtime");
-      const { runtime, model, refreshModel } = await setupRuntime(modelDef);
+      const { runtime, model } = await setupRuntime(modelDef);
       setRuntime({
         runtime,
         modelDef: model._modelDef,
-        refreshModel,
+        refreshModel: () => {
+          setRefreshModel(!refreshModel);
+        },
       });
     }
-    setup();
-  }, [modelDef]);
+    void setup();
+  }, [modelDef, refreshModel]);
 
   return setup;
 }
@@ -31,7 +32,7 @@ function useTopValues(
   runtime: malloy.Runtime,
   model?: malloy.ModelDef,
   source?: malloy.StructDef,
-  modelPath?: string
+  modelPath?: string,
 ): {
   refresh: () => void;
   topValues: malloy.SearchValueMapResult[] | undefined;
@@ -45,7 +46,7 @@ function useTopValues(
     async function getValues() {
       setTopValues(await fetchTopValues(runtime, model, source, modelPath));
     }
-    getValues();
+    void getValues();
   }, [model, modelPath, runtime, source, refresh]);
 
   return {
@@ -66,7 +67,6 @@ async function setupRuntime(modelDef: string) {
 
   return {
     model: await load(),
-    refreshModel: load,
     runtime,
   };
 }
@@ -75,9 +75,9 @@ async function fetchTopValues(
   runtime: malloy.Runtime,
   model?: malloy.ModelDef,
   source?: malloy.StructDef,
-  modelPath?: string
+  modelPath?: string,
 ): Promise<malloy.SearchValueMapResult[] | undefined> {
-  if (source === undefined || model === undefined) {
+  if (undefined === source || undefined === model) {
     return undefined;
   }
   console.log({ modelPath });

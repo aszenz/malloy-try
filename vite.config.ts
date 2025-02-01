@@ -8,9 +8,8 @@ export default defineConfig({
     "process.env": {},
   },
   optimizeDeps: {
-    exclude: ["@mapbox"],
     esbuildOptions: {
-      target: 'esnext'
-    }
+      target: "esnext",
+    },
   },
 });
