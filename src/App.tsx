@@ -11,7 +11,7 @@ function App() {
   }
   return (
     <div>
-      <h1>My App</h1>
+      <h1>Malloy model explorer</h1>
       <ModelExplorer
         runtime={setup.runtime}
         modelDef={setup.modelDef}
