@@ -67,7 +67,6 @@ function ModelExplorer({
 
   const runQueryAction = useCallback(() => {
     const query = queryWriter.getQueryStringForNotebook();
-    console.log({ query });
     if (query) {
       runQuery(query, queryName);
     }
@@ -79,8 +78,6 @@ function ModelExplorer({
     source,
     modelPath
   );
-
-  console.log({ topValues });
 
   const refresh = useCallback(
     ({ shiftKey }: EventModifiers) => {
