@@ -6,6 +6,10 @@
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "skipLibCheck": true,
+    "paths": {
+      "@malloydata/query-composer": ["./node_modules/@malloydata/query-composer/dist/types/"],
+      "@malloydata/db-duckdb/wasm": ["./node_modules/@malloydata/db-duckdb/dist/duckdb_wasm_connection_browser.d.ts"]
+    },
 
     /* Bundler mode */
     "moduleResolution": "bundler",
