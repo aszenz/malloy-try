@@ -11,6 +11,9 @@ source: test is duckdb.sql("""
         CURRENT_DATE - ((RANDOM() * 365)::INT || ' days')::INTERVAL as sale_date
     FROM generate_series(1, 1000)
 """) extend {
+    view: Everything is {
+      select: *
+    }
     view: by_category is {
         group_by: category
         aggregate: product_count is count(product_id)
