@@ -11,10 +11,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@malloydata/db-duckdb": "^0.0.233",
-    "@malloydata/malloy": "^0.0.233",
-    "@malloydata/query-composer": "0.0.232-dev250130233137",
-    "@malloydata/render": "^0.0.233",
+    "@malloydata/db-duckdb": "^0.0.235",
+    "@malloydata/malloy": "^0.0.235",
+    "@malloydata/query-composer": "0.0.232-dev250204012314",
+    "@malloydata/render": "^0.0.235",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
