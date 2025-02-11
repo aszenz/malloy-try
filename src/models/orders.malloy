@@ -1,0 +1,32 @@
+source: orders is duckdb.table('orders') extend {
+    measure: total_revenue is sum(price * quantity)
+    measure: avg_order_value is avg(price * quantity)
+    measure: no_of_orders is count(order_id)
+    measure: total_quantity is sum(quantity)
+    
+    view: Everything is {
+      select: *
+    }
+    
+    view: `Product categories` is {
+        group_by: category
+        aggregate: 
+            no_of_orders,
+            total_revenue
+        # bar_chart
+        nest: by_products is {
+            group_by: product_name
+            aggregate: 
+                no_of_orders,
+                total_revenue
+        }
+    }
+    
+    # bar_chart
+    view: `Customer countries` is {
+        group_by: customer_country
+        aggregate: 
+            no_of_orders,
+            total_revenue
+    }
+}

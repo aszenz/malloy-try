@@ -58,7 +58,7 @@ function useTopValues(
 }
 
 async function setupRuntime(modelDef: string) {
-  const conn = new DuckDBWASMConnection("test", undefined, undefined, {
+  const conn = new MyDuckDBConnection("main", undefined, undefined, {
     // This is the default row limit of the connection (when no row limit is provided)
     rowLimit: 1000,
   });
@@ -85,4 +85,53 @@ async function fetchTopValues(
   const sourceName = source.as ?? source.name;
   // Returns top 1000(by count) values from every string column in the source
   return runtime._loadModelFromModelDef(model).searchValueMap(sourceName, 1000);
+}
+
+class MyDuckDBConnection extends DuckDBWASMConnection {
+  /**
+   * Override the runDuckDBQuery method to load the required tables from the server
+   */
+  protected async runDuckDBQuery(
+    sql: string,
+    abortSignal?: AbortSignal,
+  ): Promise<{ rows: malloy.QueryDataRow[]; totalRows: number }> {
+    if (null === this.connection) {
+      throw new Error("Connection is null");
+    }
+    const connection = this.connection;
+    const tablesRequiredForQueryExecution = [
+      ...new Set(await connection.getTableNames(sql)),
+    ];
+    const alreadyLoadedTables = (await connection.query("SHOW TABLES"))
+      .toArray()
+      .map((row: { [columnName: string]: string }) => Object.values(row)[0]);
+    await Promise.all(
+      tablesRequiredForQueryExecution
+        .filter((table) => !alreadyLoadedTables.includes(table))
+        .map((table) =>
+          fetch(this._getTableUrl(table), { signal: abortSignal })
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error(`Failed to fetch data for the table: ${table}`);
+              }
+              return response.text();
+            })
+            .then((text) =>
+              this.database?.registerFileText(`${table}_file`, text),
+            )
+            .then(() =>
+              connection.insertCSVFromPath(`${table}_file`, {
+                name: table,
+                header: true,
+                detect: true,
+              }),
+            ),
+        ),
+    );
+    return super.runDuckDBQuery(sql, abortSignal);
+  }
+
+  private _getTableUrl(tableName: string): string {
+    return `/data/${tableName}.csv`;
+  }
 }

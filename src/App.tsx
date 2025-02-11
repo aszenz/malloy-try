@@ -1,11 +1,13 @@
 import ModelExplorer from "./Explore";
 import { useRuntimeSetup } from "./hooks";
-import testModelDef from "./models/test.malloy?raw";
+import ordersModelDef from "./models/orders.malloy?raw";
 
 export default App;
 
 function App() {
-  const setup = useRuntimeSetup(testModelDef);
+  const setup = useRuntimeSetup(ordersModelDef);
+  const sourceName = "orders";
+  const modelPath = "./orders";
   if (null === setup) {
     return <div>Loading...</div>;
   }
@@ -15,8 +17,8 @@ function App() {
       <ModelExplorer
         runtime={setup.runtime}
         modelDef={setup.modelDef}
-        modelPath="./"
-        sourceName="test"
+        modelPath={modelPath}
+        sourceName={sourceName}
         refreshModel={setup.refreshModel}
       />
     </div>
