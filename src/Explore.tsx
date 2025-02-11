@@ -3,7 +3,6 @@ import * as malloy from "@malloydata/malloy";
 import {
   EventModifiers,
   useQueryBuilder,
-  StubCompile,
   UndoContext,
   useRunQuery,
   ExploreQueryEditor,
@@ -11,8 +10,6 @@ import {
 
 import "@malloydata/render/webcomponent";
 import { useTopValues } from "./hooks";
-
-const stubCompile = new StubCompile();
 
 export default ModelExplorer;
 
@@ -29,19 +26,15 @@ function ModelExplorer({
   sourceName: string;
   refreshModel: () => void;
 }) {
-  const history = useRef<string[]>([""]);
+  const history = useRef<Array<malloy.TurtleDef | undefined>>([undefined]);
   const historyIndex = useRef(0);
 
   const updateQueryInUrl = useCallback(
-    ({ query }: { query: string | undefined }) => {
-      if (
-        undefined !== query &&
-        query !== history.current[historyIndex.current]
-      ) {
-        history.current = history.current.slice(0, historyIndex.current + 1);
-        history.current.push(query);
-        historyIndex.current++;
-      }
+    ({ turtle }: { turtle: malloy.TurtleDef | undefined }) => {
+      history.current = history.current.slice(0, historyIndex.current + 1);
+      history.current.push(turtle);
+      historyIndex.current++;
+
       console.info("updateQueryInUrl", history.current, historyIndex.current);
     },
     [],
@@ -91,14 +84,9 @@ function ModelExplorer({
 
   const undoContext = useMemo(() => {
     const updateQuery = () => {
-      const query = history.current[historyIndex.current];
-      if (query) {
-        stubCompile
-          .compileQuery(modelDef, query)
-          .then((query) => {
-            queryModifiers.setQuery(query, true);
-          })
-          .catch(console.error);
+      const turtle = history.current[historyIndex.current];
+      if (undefined !== turtle) {
+        queryModifiers.setQuery(turtle, true);
       } else {
         queryModifiers.clearQuery(true);
       }
@@ -129,11 +117,11 @@ function ModelExplorer({
       redo,
       undo,
     };
-  }, [modelDef, queryModifiers]);
+  }, [queryModifiers]);
 
   return (
     <UndoContext.Provider value={undoContext}>
-      <div>
+      <div className="editor">
         <ExploreQueryEditor
           model={modelDef}
           modelPath="./"
