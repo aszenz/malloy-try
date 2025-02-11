@@ -119,7 +119,7 @@ function ModelExplorer({
       <div className="editor">
         <ExploreQueryEditor
           model={modelDef}
-          modelPath="./"
+          modelPath={modelPath}
           source={source}
           queryModifiers={queryModifiers}
           topValues={topValues}
