@@ -1,0 +1,6 @@
+ContractID,ClientName,StartDate,EndDate,ContractValue,Status
+1,Acme Corp,2023-01-01,2023-12-31,100000,Active
+2,Globex Inc,2023-02-15,2024-02-14,150000,Active
+3,Soylent Corp,2023-03-01,2023-08-31,75000,Completed
+4,Initech,2023-04-01,2023-10-01,50000,Terminated
+5,Umbrella Corp,2023-05-01,2024-04-30,200000,Active

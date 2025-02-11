@@ -1,26 +1,27 @@
-import ModelExplorer from "./Explore";
+import { BrowserRouter, Route, Routes } from "react-router";
+import tradingModelSource from "./models/trading.malloy?raw";
+import "./index.css";
+import SourceExplorer from "./SourceExplorer";
+import Home from "./Home";
 import { useRuntimeSetup } from "./hooks";
-import ordersModelDef from "./models/orders.malloy?raw";
+import { RuntimeProvider } from "./contexts";
 
 export default App;
-
 function App() {
-  const setup = useRuntimeSetup(ordersModelDef);
-  const sourceName = "orders";
-  const modelPath = "./orders";
+  const setup = useRuntimeSetup(tradingModelSource);
   if (null === setup) {
     return <div>Loading...</div>;
   }
   return (
-    <div>
-      <h1>Malloy model explorer</h1>
-      <ModelExplorer
-        runtime={setup.runtime}
-        modelDef={setup.modelDef}
-        modelPath={modelPath}
-        sourceName={sourceName}
-        refreshModel={setup.refreshModel}
-      />
-    </div>
+    <RuntimeProvider setup={setup}>
+      <BrowserRouter>
+        <Routes>
+          <Route index path="/" element={<Home />} />
+          <Route path="sources">
+            <Route path=":sourceName" element={<SourceExplorer />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </RuntimeProvider>
   );
 }

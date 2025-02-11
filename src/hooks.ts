@@ -1,14 +1,11 @@
 import { useEffect, useState } from "react";
 import * as malloy from "@malloydata/malloy";
 import { DuckDBWASMConnection } from "@malloydata/db-duckdb/wasm";
+import { RuntimeSetup } from "./types";
 
 export { useRuntimeSetup, useTopValues };
 function useRuntimeSetup(modelDef: string) {
-  const [setup, setRuntime] = useState<{
-    runtime: malloy.Runtime;
-    modelDef: malloy.ModelDef;
-    refreshModel: () => void;
-  } | null>(null);
+  const [setup, setRuntime] = useState<RuntimeSetup | null>(null);
   const [refreshModel, setRefreshModel] = useState(false);
 
   useEffect(() => {
@@ -16,7 +13,7 @@ function useRuntimeSetup(modelDef: string) {
       const { runtime, model } = await setupRuntime(modelDef);
       setRuntime({
         runtime,
-        modelDef: model._modelDef,
+        model,
         refreshModel: () => {
           setRefreshModel(!refreshModel);
         },

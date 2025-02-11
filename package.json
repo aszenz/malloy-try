@@ -16,7 +16,8 @@
     "@malloydata/query-composer": "0.0.232-dev250204012314",
     "@malloydata/render": "^0.0.235",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "react-router": "^7.1.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
@@ -31,6 +32,7 @@
     "prettier": "^3.4.2",
     "typescript": "~5.7.3",
     "typescript-eslint": "^8.18.2",
-    "vite": "^6.0.5"
+    "vite": "^6.0.5",
+    "vite-plugin-svgr": "^4.3.0"
   }
 }

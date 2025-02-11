@@ -30,3 +30,6 @@ source: orders is duckdb.table('orders') extend {
             total_revenue
     }
 }
+source: contracts is duckdb.table('contracts') extend {
+
+}
