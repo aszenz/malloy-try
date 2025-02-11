@@ -1,26 +1,72 @@
 source: test is duckdb.sql("""
-    SELECT
-        'P' || CAST(ROW_NUMBER() OVER() AS VARCHAR) as product_id,
-        CASE (RANDOM() * 3)::INT 
-            WHEN 0 THEN 'Electronics'
-            WHEN 1 THEN 'Clothing'
-            ELSE 'Books'
-        END as category,
-        ROUND(RANDOM() * 1000, 2) as price,
-        'C' || CAST((RANDOM() * 100)::INT AS VARCHAR) as customer_id,
-        CURRENT_DATE - ((RANDOM() * 365)::INT || ' days')::INTERVAL as sale_date
-    FROM generate_series(1, 1000)
+    WITH product_names AS (
+        SELECT unnest(ARRAY[
+            'Smart Watch', 'Laptop', 'Headphones', 'T-Shirt', 'Jeans', 'Jacket',
+            'Novel', 'Textbook', 'Cookbook', 'Tablet', 'Phone Case', 'Speaker'
+        ]) as name
+    )
+    SELECT 
+        product_id,
+        product_name,
+        category,
+        CASE 
+            WHEN category = 'Electronics' THEN ROUND(100 + RANDOM() * 900, 2)
+            WHEN category = 'Clothing' THEN ROUND(20 + RANDOM() * 180, 2)
+            WHEN category = 'Books' THEN ROUND(10 + RANDOM() * 90, 2)
+            ELSE ROUND(30 + RANDOM() * 300, 2)
+        END as price,
+        customer_id,
+        'customer_' || customer_id || '@email.com' as customer_email,
+        (ARRAY['USA', 'Canada', 'UK', 'Germany', 'France'])[1 + (RANDOM() * 5)::INT] as customer_country,
+        (ARRAY['New', 'Processing', 'Shipped', 'Delivered', 'Cancelled'])[1 + (RANDOM() * 5)::INT] as order_status,
+        CAST(RANDOM() * 5 + 1 AS INT) as quantity,
+        CURRENT_DATE - ((RANDOM() * 730)::INT || ' days')::INTERVAL as sale_date,
+        CASE (RANDOM() * 3)::INT
+            WHEN 0 THEN 'Credit Card'
+            WHEN 1 THEN 'PayPal'
+            ELSE 'Bank Transfer'
+        END as payment_method
+    FROM (
+        SELECT 
+            'P' || CAST(ROW_NUMBER() OVER() AS VARCHAR) as product_id,
+            (SELECT name FROM product_names ORDER BY RANDOM() LIMIT 1) as product_name,
+            CASE (RANDOM() * 5)::INT 
+                WHEN 0 THEN 'Electronics'
+                WHEN 1 THEN 'Clothing'
+                WHEN 2 THEN 'Books'
+                WHEN 3 THEN 'Home & Kitchen'
+                WHEN 4 THEN 'Sports'
+            END as category,
+            'C' || LPAD(CAST((RANDOM() * 1000)::INT AS VARCHAR), 4, '0') as customer_id
+        FROM generate_series(1, 100000)
+    ) subquery
 """) extend {
+    measure: total_revenue is sum(price * quantity)
+    measure: avg_order_value is avg(price * quantity)
+    measure: count_orders is count()
+    
     view: Everything is {
       select: *
     }
+    
     view: by_category is {
         group_by: category
-        aggregate: product_count is count(product_id)
-        # bar_chart
+        aggregate: 
+            product_count is count(product_id),
+            revenue is sum(price * quantity)
         nest: by_products is {
-          group_by: product_id
-          aggregate: tot_price is sum(price)
+            group_by: product_id, product_name
+            aggregate: 
+                tot_price is sum(price * quantity),
+                units_sold is sum(quantity)
         }
+    }
+    
+    view: by_country is {
+        group_by: customer_country
+        aggregate: 
+            orders is count(),
+            revenue is sum(price * quantity),
+            avg_order is avg(price * quantity)
     }
 }
