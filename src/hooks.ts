@@ -58,7 +58,10 @@ function useTopValues(
 }
 
 async function setupRuntime(modelDef: string) {
-  const conn = new DuckDBWASMConnection("test");
+  const conn = new DuckDBWASMConnection("test", undefined, undefined, {
+    // This is the default row limit of the connection (when no row limit is provided)
+    rowLimit: 1000,
+  });
   const runtime = new malloy.SingleConnectionRuntime({ connection: conn });
   async function load() {
     const modelMaterializer = runtime.loadModel(modelDef);
