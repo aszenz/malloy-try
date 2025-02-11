@@ -111,12 +111,7 @@ function ModelExplorer({
       console.info("redo", history.current, historyIndex.current);
     };
 
-    return {
-      canRedo,
-      canUndo,
-      redo,
-      undo,
-    };
+    return { canRedo, canUndo, redo, undo };
   }, [queryModifiers]);
 
   return (

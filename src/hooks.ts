@@ -65,10 +65,7 @@ async function setupRuntime(modelDef: string) {
     return await modelMaterializer.getModel();
   }
 
-  return {
-    model: await load(),
-    runtime,
-  };
+  return { model: await load(), runtime };
 }
 
 async function fetchTopValues(
