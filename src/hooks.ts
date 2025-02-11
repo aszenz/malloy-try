@@ -83,5 +83,6 @@ async function fetchTopValues(
   console.log({ modelPath });
 
   const sourceName = source.as ?? source.name;
-  return runtime._loadModelFromModelDef(model).searchValueMap(sourceName);
+  // Returns top 1000(by count) values from every string column in the source
+  return runtime._loadModelFromModelDef(model).searchValueMap(sourceName, 1000);
 }
