@@ -34,9 +34,7 @@ export function exploreSubtype(explore: Explore) {
         ? "many_to_one"
         : relationship === JoinRelationship.OneToMany
           ? "one_to_many"
-          : JoinRelationship.OneToOne
-            ? "one_to_one"
-            : "base";
+          : "one_to_one";
   } else {
     subtype = "base";
   }
@@ -150,7 +148,7 @@ export const getTypeLabelFromStructDef = (structDef: StructDef): string => {
       return `${getTypeLabelFromTypeDef(typeDef.elementTypeDef)}[]`;
     }
     if (typeDef.type === "sql native" && typeDef.rawType) {
-      `${typeDef.type} (${typeDef.rawType})`;
+      return `${typeDef.type} (${typeDef.rawType})`;
     }
     return typeDef.type;
   };
@@ -171,7 +169,7 @@ export const getTypeLabel = (field: Field): string => {
   }
   let typeLabel = fieldType(field);
   if (field.isAtomicField() && field.isUnsupported()) {
-    typeLabel = `${typeLabel} (${field.rawType})`;
+    typeLabel = `${typeLabel} ${undefined !== field.rawType ? `(${field.rawType})` : ""}}`;
   }
   return typeLabel;
 };
