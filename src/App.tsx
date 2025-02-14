@@ -18,7 +18,7 @@ function App() {
       <BrowserRouter basename={baseUrl}>
         <Routes>
           <Route index path="/" element={<Home />} />
-          <Route path="/explorer" element={<ModelExplorer />} />
+          <Route path="/explorer/:source" element={<ModelExplorer />} />
         </Routes>
       </BrowserRouter>
     </RuntimeProvider>

@@ -15,7 +15,11 @@ function Home() {
         queries={[]}
         defaultShow={true}
         onPreviewClick={(explore) => {
-          void navigate(`/explorer?name=${explore.name}`);
+          if (undefined !== explore.source) {
+            void navigate(
+              `/explorer/${explore.source.name}/?name=${explore.name}`,
+            );
+          }
         }}
         onFieldClick={(field) => {
           console.log("field", field);
@@ -26,7 +30,7 @@ function Home() {
             const source = query.parentExplore.name;
             const queryString = `run:\`${source}\`->\`${query.name}\``;
             void navigate(
-              `/sources/${query.parentExplore.name}?query=${queryString}&name=${query.name}&run=true`,
+              `/explorer/${query.parentExplore.name}?query=${queryString}&name=${query.name}&run=true`,
             );
           }
         }}
