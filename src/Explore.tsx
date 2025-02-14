@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import * as malloy from "@malloydata/malloy";
 import {
   EventModifiers,
@@ -6,38 +6,71 @@ import {
   UndoContext,
   useRunQuery,
   ExploreQueryEditor,
+  StubCompile,
 } from "@malloydata/query-composer";
 
 import "@malloydata/render/webcomponent";
 import { useTopValues } from "./hooks";
+import { useParams, useSearchParams } from "react-router";
+import { useRuntime } from "./contexts";
 
 export default ModelExplorer;
 
-function ModelExplorer({
-  runtime,
-  modelDef,
-  modelPath,
-  sourceName,
-  refreshModel,
-}: {
-  runtime: malloy.Runtime;
-  modelDef: malloy.ModelDef;
-  modelPath: string;
-  sourceName: string;
-  refreshModel: () => void;
-}) {
+function ModelExplorer() {
+  const {
+    model: { _modelDef: modelDef },
+    runtime,
+    refreshModel,
+  } = useRuntime();
+  const urlParams = useParams();
+  const sourceName = urlParams.source;
+  if (undefined === sourceName) {
+    throw new Error("Source name is required");
+  }
+  const modelPath = "./"; // todo: think about the need for this
+  // URL Parameter values
+  const [searchParams, setSearchParams] = useSearchParams();
+  const nameParam = searchParams.get("name");
+  const queryParam = searchParams.get("query");
+  const runParam = searchParams.get("run");
+
   const history = useRef<Array<malloy.TurtleDef | undefined>>([undefined]);
   const historyIndex = useRef(0);
 
   const updateQueryInUrl = useCallback(
-    ({ turtle }: { turtle: malloy.TurtleDef | undefined }) => {
+    ({
+      run,
+      query: newQuery,
+      turtle,
+    }: {
+      run: boolean;
+      query: string | undefined;
+      turtle: malloy.TurtleDef | undefined;
+    }) => {
       history.current = history.current.slice(0, historyIndex.current + 1);
       history.current.push(turtle);
       historyIndex.current++;
 
+      if (queryParam === newQuery) {
+        return;
+      }
+      if (newQuery === undefined) {
+        searchParams.delete("query");
+      } else {
+        searchParams.set("query", newQuery);
+        searchParams.delete("name");
+      }
+      if (run) {
+        searchParams.set("run", "true");
+      } else {
+        searchParams.delete("run");
+      }
+      console.log({ urlParams: searchParams });
+      setSearchParams(searchParams);
+
       console.info("updateQueryInUrl", history.current, historyIndex.current);
     },
-    [],
+    [queryParam, searchParams, setSearchParams],
   );
   const {
     error: builderError,
@@ -53,6 +86,36 @@ function ModelExplorer({
   } = useRunQuery(modelDef, modelPath, (query, model, modelPath, queryName) =>
     executeMalloyQuery(runtime, query, model, modelPath, queryName),
   );
+
+  useEffect(() => {
+    async function loadQueryFromUrl() {
+      try {
+        if (null !== queryParam) {
+          const compiler = new StubCompile();
+          const compiledQuery = await compiler.compileQuery(
+            modelDef,
+            queryParam,
+          );
+          queryModifiers.setQuery(compiledQuery, true);
+          if ("true" === runParam) {
+            runQuery(queryParam, nameParam ?? "unnamed");
+          }
+        } else {
+          searchParams.delete("query");
+          searchParams.delete("run");
+          searchParams.delete("name");
+          queryModifiers.clearQuery(true);
+        }
+      } catch (error) {
+        console.error(error);
+      } finally {
+        // setLoading(loading => --loading);
+      }
+    }
+    void loadQueryFromUrl();
+    // TODO: only run on start/urlParams changed
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const source = getSourceDef(modelDef, sourceName);
 

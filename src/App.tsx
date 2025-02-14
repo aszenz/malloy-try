@@ -1,10 +1,10 @@
 import { BrowserRouter, Route, Routes } from "react-router";
 import tradingModelSource from "./models/trading.malloy?raw";
 import "./index.css";
-import SourceExplorer from "./SourceExplorer";
 import Home from "./Home";
 import { useRuntimeSetup } from "./hooks";
 import { RuntimeProvider } from "./contexts";
+import ModelExplorer from "./Explore";
 
 export default App;
 function App() {
@@ -17,9 +17,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route index path="/" element={<Home />} />
-          <Route path="sources">
-            <Route path=":sourceName" element={<SourceExplorer />} />
-          </Route>
+          <Route path="/explorer" element={<ModelExplorer />} />
         </Routes>
       </BrowserRouter>
     </RuntimeProvider>

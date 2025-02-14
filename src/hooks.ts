@@ -95,6 +95,7 @@ class MyDuckDBConnection extends DuckDBWASMConnection {
     if (null === this.connection) {
       throw new Error("Connection is null");
     }
+    console.log({ sql });
     const connection = this.connection;
     const tablesRequiredForQueryExecution = [
       ...new Set(await connection.getTableNames(sql)),
@@ -102,6 +103,8 @@ class MyDuckDBConnection extends DuckDBWASMConnection {
     const alreadyLoadedTables = (await connection.query("SHOW TABLES"))
       .toArray()
       .map((row: { [columnName: string]: string }) => Object.values(row)[0]);
+    // TODO: Don't load the full table for describe queries
+    // Describe queries are used to load the schema of the table
     await Promise.all(
       tablesRequiredForQueryExecution
         .filter((table) => !alreadyLoadedTables.includes(table))
