@@ -1,6 +1,7 @@
 /*
- * THIS SOURCE CODE IS COPIED FROM malloy vscode extension AND IS SUBJECT TO IT'S COPYRIGHT NOTICE AND LICENSE TERMS
- * See https://github.com/malloydata/malloy-vscode-extension/blob/cde23d2459f4d7d4240d609b454cb9e8d47757e9/src/common/schema.ts
+ * THIS SOURCE CODE IS DERIVED FROM malloy vscode extension AND IS SUBJECT TO IT'S COPYRIGHT NOTICE AND LICENSE TERMS
+ * REPO: https://github.com/malloydata/malloy-vscode-extension
+ * FILE: https://github.com/malloydata/malloy-vscode-extension/blob/cde23d2459f4d7d4240d609b454cb9e8d47757e9/src/common/schema.ts
  */
 import {
   AtomicFieldType,

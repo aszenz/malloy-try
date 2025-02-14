@@ -1,3 +1,8 @@
+/*
+ * THIS SOURCE CODE IS DERIVED FROM malloy vscode extension AND IS SUBJECT TO IT'S COPYRIGHT NOTICE AND LICENSE TERMS
+ * REPO: https://github.com/malloydata/malloy-vscode-extension
+ * FILE: https://github.com/malloydata/malloy-vscode-extension/blob/cde23d2459f4d7d4240d609b454cb9e8d47757e9/src/extension/webviews/components/SchemaRenderer.tsx
+ */
 import * as React from "react";
 import { Explore, Field, NamedQuery, QueryField } from "@malloydata/malloy";
 
