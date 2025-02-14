@@ -7,6 +7,7 @@ import {
   useRunQuery,
   ExploreQueryEditor,
   StubCompile,
+  RunQuery,
 } from "@malloydata/query-composer";
 
 import "@malloydata/render/webcomponent";
@@ -30,9 +31,6 @@ function ModelExplorer() {
   const modelPath = "./"; // todo: think about the need for this
   // URL Parameter values
   const [searchParams, setSearchParams] = useSearchParams();
-  const nameParam = searchParams.get("name");
-  const queryParam = searchParams.get("query");
-  const runParam = searchParams.get("run");
 
   const history = useRef<Array<malloy.TurtleDef | undefined>>([undefined]);
   const historyIndex = useRef(0);
@@ -51,7 +49,7 @@ function ModelExplorer() {
       history.current.push(turtle);
       historyIndex.current++;
 
-      if (queryParam === newQuery) {
+      if (searchParams.get("query") === newQuery) {
         return;
       }
       if (newQuery === undefined) {
@@ -70,7 +68,12 @@ function ModelExplorer() {
 
       console.info("updateQueryInUrl", history.current, historyIndex.current);
     },
-    [queryParam, searchParams, setSearchParams],
+    [searchParams, setSearchParams],
+  );
+  const runQueryImpl: RunQuery = useCallback(
+    (query, model, modelPath, queryName) =>
+      executeMalloyQuery(runtime, query, model, modelPath, queryName),
+    [runtime],
   );
   const {
     error: builderError,
@@ -83,22 +86,23 @@ function ModelExplorer() {
     result,
     runQuery,
     isRunning,
-  } = useRunQuery(modelDef, modelPath, (query, model, modelPath, queryName) =>
-    executeMalloyQuery(runtime, query, model, modelPath, queryName),
-  );
+  } = useRunQuery(modelDef, modelPath, runQueryImpl);
 
   useEffect(() => {
     async function loadQueryFromUrl() {
       try {
-        if (null !== queryParam) {
+        const queryNameParam = searchParams.get("name");
+        const querySrcParam = searchParams.get("query");
+        const runParam = searchParams.get("run");
+        if (null !== querySrcParam) {
           const compiler = new StubCompile();
           const compiledQuery = await compiler.compileQuery(
             modelDef,
-            queryParam,
+            querySrcParam,
           );
           queryModifiers.setQuery(compiledQuery, true);
           if ("true" === runParam) {
-            runQuery(queryParam, nameParam ?? "unnamed");
+            runQuery(querySrcParam, queryNameParam ?? "unnamed");
           }
         } else {
           searchParams.delete("query");
@@ -114,8 +118,7 @@ function ModelExplorer() {
     }
     void loadQueryFromUrl();
     // TODO: only run on start/urlParams changed
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [modelDef, queryModifiers, runQuery, searchParams]);
 
   const source = getSourceDef(modelDef, sourceName);
 
