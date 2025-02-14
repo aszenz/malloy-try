@@ -15,14 +15,19 @@ function Home() {
         queries={[]}
         defaultShow={true}
         onPreviewClick={(explore) => {
-          if (undefined !== explore.source) {
-            void navigate(
-              `/explorer/${explore.source.name}/?name=${explore.name}`,
-            );
-          }
+          void navigate(`/explorer/${explore.name}`);
         }}
         onFieldClick={(field) => {
           console.log("field", field);
+          const sourceName = field.parentExplore.name;
+
+          const queryString =
+            field.isAtomicField() && field.isCalculation()
+              ? `run: \`${sourceName}\`->{aggregate: \`${field.name}\`}`
+              : `run:\`${sourceName}\`->{ select: \`${field.name}\`}`;
+          void navigate(
+            `/explorer/${sourceName}?query=${queryString}&run=true`,
+          );
         }}
         onQueryClick={(query) => {
           console.log("query", query);
