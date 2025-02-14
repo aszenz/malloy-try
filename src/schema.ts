@@ -1,4 +1,9 @@
+/*
+ * THIS SOURCE CODE IS COPIED FROM malloy vscode extension AND IS SUBJECT TO IT'S COPYRIGHT NOTICE AND LICENSE TERMS
+ * See https://github.com/malloydata/malloy-vscode-extension/blob/cde23d2459f4d7d4240d609b454cb9e8d47757e9/src/common/schema.ts
+ */
 import {
+  AtomicFieldType,
   AtomicTypeDef,
   Explore,
   Field,
@@ -9,11 +14,30 @@ import {
   isSourceDef,
 } from "@malloydata/malloy";
 
-export function isFieldAggregate(field: Field) {
+export type { ModelDef, Explore, Field };
+export {
+  fieldType,
+  exploreSubtype,
+  isFieldHidden,
+  isFieldAggregate,
+  getTypeLabel,
+  quoteIfNecessary,
+  getSourceDef,
+};
+
+type FieldType =
+  | FieldSubType
+  | "array"
+  | keyof typeof AtomicFieldType
+  | "query";
+
+type FieldSubType = "base" | "many_to_one" | "one_to_many" | "one_to_one";
+
+function isFieldAggregate(field: Field) {
   return field.isAtomicField() && field.isCalculation();
 }
 
-export function fieldType(field: Field) {
+function fieldType(field: Field): FieldType {
   if (field.isExplore()) {
     if (field.isArray) {
       return "array";
@@ -21,12 +45,14 @@ export function fieldType(field: Field) {
       return exploreSubtype(field);
     }
   } else {
-    return field.isAtomicField() ? field.type.toString() : "query";
+    return field.isAtomicField()
+      ? (field.type.toString() as keyof typeof AtomicFieldType)
+      : "query";
   }
 }
 
-export function exploreSubtype(explore: Explore) {
-  let subtype;
+function exploreSubtype(explore: Explore): FieldSubType {
+  let subtype: FieldSubType;
   if (explore.hasParentExplore()) {
     const relationship = explore.joinRelationship;
     subtype =
@@ -58,8 +84,9 @@ const hiddenFields = new WeakMap<
  * @param tag string | undefined
  * @returns true if tag is a string
  */
-const isStringTag = (tag: string | undefined): tag is string =>
-  typeof tag === "string";
+function isStringTag(tag: string | undefined): tag is string {
+  return typeof tag === "string";
+}
 
 /**
  * Determine whether to hide a field in the schema viewer based on tags
@@ -72,7 +99,7 @@ const isStringTag = (tag: string | undefined): tag is string =>
  * @param field A Field object
  * @returns true if field should not be displayed in schema viewer
  */
-export function isFieldHidden(field: Field): boolean {
+function isFieldHidden(field: Field): boolean {
   const { name, parentExplore } = field;
   let hidden = hiddenFields.get(parentExplore);
   if (!hidden) {
@@ -98,13 +125,13 @@ export function isFieldHidden(field: Field): boolean {
  * @param element A field path element
  * @returns A potentially quoted field path element
  */
-export const quoteIfNecessary = (element: string) => {
+function quoteIfNecessary(element: string) {
   // Quote if contains non-word characters
   if (/\W/.test(element) || RESERVED.includes(element.toUpperCase())) {
     return `\`${element}\``;
   }
   return element;
-};
+}
 
 /**
  * Retrieve a source from a model safely
@@ -114,27 +141,27 @@ export const quoteIfNecessary = (element: string) => {
  * @returns SourceDef for given name, or throws if not a source
  */
 
-export const getSourceDef = (modelDef: ModelDef, sourceName: string) => {
+function getSourceDef(modelDef: ModelDef, sourceName: string) {
   const result = modelDef.contents[sourceName];
   if (isSourceDef(result)) {
     return result;
   }
   throw new Error(`Not a source: ${sourceName}`);
-};
+}
 
 /*
  * It would be nice if these types made it out of Malloy, or if this
  * functionality moved into core Malloy
  */
 
-interface NativeUnsupportedTypeDef {
+type NativeUnsupportedTypeDef = {
   type: "sql native";
   rawType?: string;
-}
+};
 
-interface RecordElementTypeDef {
+type RecordElementTypeDef = {
   type: "record_element";
-}
+};
 
 type TypeDef =
   | RepeatedRecordTypeDef
@@ -142,7 +169,7 @@ type TypeDef =
   | NativeUnsupportedTypeDef
   | RecordElementTypeDef;
 
-export const getTypeLabelFromStructDef = (structDef: StructDef): string => {
+const getTypeLabelFromStructDef = (structDef: StructDef): string => {
   const getTypeLabelFromTypeDef = (typeDef: TypeDef): string => {
     if (typeDef.type === "array") {
       return `${getTypeLabelFromTypeDef(typeDef.elementTypeDef)}[]`;
@@ -159,7 +186,7 @@ export const getTypeLabelFromStructDef = (structDef: StructDef): string => {
   return structDef.type;
 };
 
-export const getTypeLabel = (field: Field): string => {
+const getTypeLabel = (field: Field): string => {
   if (field.isExplore()) {
     if (field.isArray) {
       return getTypeLabelFromStructDef(field.structDef);
@@ -167,11 +194,11 @@ export const getTypeLabel = (field: Field): string => {
       return "";
     }
   }
-  let typeLabel = fieldType(field);
+  const type = fieldType(field);
   if (field.isAtomicField() && field.isUnsupported()) {
-    typeLabel = `${typeLabel} ${undefined !== field.rawType ? `(${field.rawType})` : ""}}`;
+    return `${type} ${undefined !== field.rawType ? `(${field.rawType})` : ""}}`;
   }
-  return typeLabel;
+  return type;
 };
 
 const RESERVED: string[] = [
