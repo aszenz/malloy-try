@@ -4,6 +4,7 @@ import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
 import tseslint from "typescript-eslint";
 import eslintReact from "eslint-plugin-react";
+import reactCompiler from "eslint-plugin-react-compiler";
 
 export default tseslint.config({
   extends: [tseslint.configs.strictTypeChecked],
@@ -25,6 +26,7 @@ export default tseslint.config({
     "react-hooks": reactHooks,
     "react-refresh": reactRefresh,
     react: eslintReact,
+    "react-compiler": reactCompiler,
   },
   rules: {
     ...reactHooks.configs.recommended.rules,
@@ -34,5 +36,6 @@ export default tseslint.config({
       "warn",
       { allowConstantExport: true },
     ],
+    ...reactCompiler.configs.recommended.rules,
   },
 });
