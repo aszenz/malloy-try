@@ -4,7 +4,7 @@ import svgr from "vite-plugin-svgr";
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: process.env.GITHUB_ACTIONS ? "/malloy-try/" : "/",
+  base: process.env.BASE_PUBLIC_PATH,
   plugins: [react(), svgr()],
   define: {
     "process.env": {},

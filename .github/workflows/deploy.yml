@@ -34,6 +34,9 @@ jobs:
 
       - name: Build website
         run: npm run build
+        # For gh pages deployment, base path is repository name
+        env:
+          BASE_PATH: ${{ github.event.repository.name }}
 
       - name: Upload Build Artifact
         # only run on pushes to master
