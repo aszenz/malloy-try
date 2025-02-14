@@ -12,9 +12,10 @@ function App() {
   if (null === setup) {
     return <div>Loading...</div>;
   }
+  const baseUrl = import.meta.env.BASE_URL;
   return (
     <RuntimeProvider setup={setup}>
-      <BrowserRouter>
+      <BrowserRouter basename={baseUrl}>
         <Routes>
           <Route index path="/" element={<Home />} />
           <Route path="/explorer" element={<ModelExplorer />} />
