@@ -133,6 +133,6 @@ class MyDuckDBConnection extends DuckDBWASMConnection {
 
   private _getTableUrl(tableName: string): string {
     const baseUrl = import.meta.env.BASE_URL;
-    return `${baseUrl}data/${tableName}.csv`;
+    return new URL(`${baseUrl}data/${tableName}.csv`, window.location.origin).toString();
   }
 }
