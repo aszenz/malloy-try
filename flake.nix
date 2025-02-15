@@ -35,6 +35,8 @@
           shellHook = ''
             # To make malloy extension work on nixos
             export LD_LIBRARY_PATH="${pkgs.stdenv.cc.cc.lib}/lib";
+            export PLAYWRIGHT_BROWSERS_PATH="${pkgs.playwright-driver.browsers}"
+            export PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS=1
           '';
         };
       }

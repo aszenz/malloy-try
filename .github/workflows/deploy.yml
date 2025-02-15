@@ -50,6 +50,9 @@ jobs:
     if: github.ref == 'refs/heads/master'
     needs: build
 
+    outputs:
+      page_url: ${{ steps.deployment.outputs.page_url }}
+
     # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
     permissions:
       pages: write # to deploy to Pages
@@ -65,3 +68,28 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+  test_deployment:
+    name: Test the deployed version
+    needs: deploy
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+      - name: Install dependencies
+        run: npm ci
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+      - name: Run tests
+        run: npm test
+        env:
+          URL: ${{ needs.deploy.outputs.page_url }}
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
