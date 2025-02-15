@@ -1,8 +1,9 @@
-# Malloy model explorer
+# Data explorer
 
-Explore malloy models and sources (duckdb only)
+Explore semantic data models written in malloy.
 
 ## Using
 
-- [Malloy data](https://www.malloydata.dev/)
-- [Malloy Composer](https://github.com/malloydata/malloy-composer)
+- [Malloy Language](https://github.com/malloydata/malloy)
+- [Malloy Query Composer](https://github.com/malloydata/malloy-composer)
+- [DuckDB WASM](https://github.com/duckdb/duckdb-wasm)

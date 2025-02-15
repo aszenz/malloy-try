@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages
+name: CI/CD
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -23,9 +23,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
-          cache: npm
-          cache-dependency-path: package-lock.json
+          node-version: lts/*
 
       - name: Install dependencies
         run: npm ci
@@ -40,7 +38,7 @@ jobs:
           BASE_PUBLIC_PATH: /${{ github.event.repository.name }}/
 
       - name: Upload Build Artifact
-        # only run on pushes to master
+        # only run on pushes to master or workflow_dispatch
         if: github.ref == 'refs/heads/master'
         uses: actions/upload-pages-artifact@v3
         with:
